@@ -35,7 +35,9 @@
                 })
             })
                 .then(res => res.json())
-                .catch(alert("Not register"));
+                .catch((err) => {
+                    alert("Not registerd")
+                });
         });
 
     </script>
