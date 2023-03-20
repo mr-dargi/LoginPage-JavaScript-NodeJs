@@ -26,14 +26,33 @@ app.get("/", (req, res) => {
     res.sendFile("./views/main.html", { root: __dirname });
 })
 
-
+// making sign up
 // bcrypt is using for hashing 
-
 app.post("/api/register", async (req, res) => {
-    // hashing a password
     const { username, password: plainTextPassword } = req.body;
 
+    if(!username || typeof username !== "string") {
+        return res.json({ 
+            status: "error",
+            error: "Invalid username"
+        });
+    }
 
+    if(!plainTextPassword || typeof plainTextPassword !== "string") {
+        return res.json({ 
+            status: "error",
+            error: "Invalid password"
+        });
+    }
+
+    if(plainTextPassword.length < 8) {
+        return res.json({ 
+            status: "error",
+            error: "Password is too small, the password should be atleast 8 characters"
+        });
+    }
+
+    // hashing a password
     const password = await bcrypt.hash(plainTextPassword, 10);
 
     try{
@@ -43,8 +62,12 @@ app.post("/api/register", async (req, res) => {
         })
         console.log("User Created successfully: " ,response);
     } catch (error) {
-        return res.json({ status: "error" });
+        if(error.code === 11000) {
+            return res.json({ 
+                status: "error",
+                error: "User name is alerady exist"
+            });
+        }
+        throw error
     }
-
-    res.json({ status: "ok" });
-})
+})  

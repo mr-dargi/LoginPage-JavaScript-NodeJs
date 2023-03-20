@@ -34,10 +34,13 @@
                     password
                 })
             })
-                .then(res => res.json())
-                .catch((err) => {
-                    alert("Not registerd")
-                });
+                .then(res => res.json());
+
+            if(result.status === "ok") {
+
+            } else {
+                alert(result.error);
+            }
         });
 
     </script>
