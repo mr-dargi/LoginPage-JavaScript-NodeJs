@@ -1,6 +1,7 @@
 const express = require("express"); 
 const mongoose = require("mongoose");
 const User = require("./models/user");
+const bcrypt = require("bcryptjs");
 
 // middleware & json parser
 const app = express();
@@ -26,8 +27,24 @@ app.get("/", (req, res) => {
 })
 
 
-app.post("/api/register", (req, res) => {
-    // console.log(req.body);
-    
+// bcrypt is using for hashing 
+
+app.post("/api/register", async (req, res) => {
+    // hashing a password
+    const { username, password: plainTextPassword } = req.body;
+
+
+    const password = await bcrypt.hash(plainTextPassword, 10);
+
+    try{
+        const response = await User.create({
+            username,
+            password
+        })
+        console.log("User Created successfully: " ,response);
+    } catch (error) {
+        return res.json({ status: "error" });
+    }
+
     res.json({ status: "ok" });
 })
