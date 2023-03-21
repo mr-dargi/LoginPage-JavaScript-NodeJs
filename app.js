@@ -2,6 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const User = require("./models/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = "";  // your secret key
 
 // middleware & json parser
 const app = express();
@@ -22,8 +25,42 @@ mongoose.connect(dbURI)
 
 
 // routes of the application
-app.get("/", (req, res) => {
+app.get("/signUp", (req, res) => {
     res.sendFile("./views/main.html", { root: __dirname });
+})
+
+app.get("/login", (req, res) => {
+    res.sendFile("./views/login.html", { root: __dirname });
+})
+
+// making a login page
+app.post("/api/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username }).lean();
+
+    if(!user) {
+        res.json({
+            status: "error",
+            error: "Invalid Username/Password"
+        })
+    }
+
+    if (await bcrypt.compare(password, user.password)) {
+        const token = jwt.sign({
+            id: user._id,
+            username: user.username
+        }, 
+        JWT_SECRET
+        )
+
+        res.json({ status: "ok", data: token });
+    } else {
+        res.json({
+            status: "error",
+            error: "Invalid Username/Password"
+        })
+    }
 })
 
 // making sign up

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+</head>
+<body>
+    <h1>Login Page</h1>
+    <form id="login">
+        <label for="UserName">User Name:</label>
+        <input type="text" autocomplete="off" name="UserName" id="UserName" required>
+        <label for="Password">Password:</label>
+        <input type="password" autocomplete="off" name="Password" id="Password" required>
+        <button>Submit</button>
+    </form>
+
+    <script>
+        const form = document.getElementById("login");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const username = document.getElementById("UserName").value;
+            const password = document.getElementById("Password").value;
+
+            const result = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            })
+                .then(res => res.json());
+
+            if(result.status === "ok") {
+                console.log("Got token: ", result.data);
+                alert("Success");
+            } else {
+                alert(result.error);
+            }
+        });
+
+    </script>
+</body>
+</html>
