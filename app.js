@@ -15,13 +15,12 @@ const dbURI = "mongodb://localhost:27017/users";
 
 mongoose.connect(dbURI)
     .then(result => {
+        // listinig on port 3000
         app.listen(3000, () => {
             console.log("Listining on port 3000");
         })
     })
     .catch(err => console.log(err));
-
-// listinig on port 3000
 
 
 // routes of the application
@@ -34,17 +33,48 @@ app.get("/login", (req, res) => {
 })
 
 app.get("/change-password", (req, res) => {
-    res.sendFile("./views/change-password", { root: __dirname });
+    res.sendFile("./views/change-password.html", { root: __dirname });
 })
 
 // changing a password page
-app.post("/api/change-password", (req, res) => {
-    const { token } = req.body;
+app.post("/api/change-password", async (req, res) => {
+    const { token, newpassword } = req.body;
 
-    const user = jwt.verify(token, JWT_SECRET);
+    if(!newpassword || typeof newpassword !== "string") {
+        return res.json({ 
+            status: "error",
+            error: "Invalid password"
+        });
+    }
 
-    console.log(user);
-    res.json({ status: "ok" });
+    if(newpassword.length < 8) {
+        return res.json({ 
+            status: "error",
+            error: "Password is too small, the password should be atleast 8 characters"
+        });
+    }
+
+
+    try {
+        const user = jwt.verify(token, JWT_SECRET);
+
+        const _id = user.id;
+
+        const hashedPassword = await bcrypt.hash(newpassword, 10);
+        await User.updateOne({ _id }, {
+            $set: { password: hashedPassword }
+        })
+
+        res.json({
+            status: "ok"
+        })
+    } catch (error) {
+        res.json({
+            status: "error",
+            error: ":))"
+        })
+    }
+
 })
 
 // making a login page
