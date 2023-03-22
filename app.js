@@ -33,6 +33,20 @@ app.get("/login", (req, res) => {
     res.sendFile("./views/login.html", { root: __dirname });
 })
 
+app.get("/change-password", (req, res) => {
+    res.sendFile("./views/change-password", { root: __dirname });
+})
+
+// changing a password page
+app.post("/api/change-password", (req, res) => {
+    const { token } = req.body;
+
+    const user = jwt.verify(token, JWT_SECRET);
+
+    console.log(user);
+    res.json({ status: "ok" });
+})
+
 // making a login page
 app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
