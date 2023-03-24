@@ -15,12 +15,7 @@ This project built for learning the process of making login page, how should sig
 ## My process
 
 ### Built with
-
-- Html
-- CSS Bootstrap
-- Flexbox
-- CSS Grid
-- Mobile-first workflow
+- JavaScript
 - Node packages ( express, Json web token, bycyptjs, mongoose ) - JS library
 
 
